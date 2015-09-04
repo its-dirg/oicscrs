@@ -53,7 +53,8 @@ def static(environ, start_response, path):
     LOGGER.info("[static]sending: %s" % (path,))
 
     try:
-        text = open(path).read()
+        with open(path) as f:
+            text = f.read()
         if path.endswith(".ico"):
             start_response('200 OK', [('Content-Type', "image/x-icon")])
         elif path.endswith(".html"):
@@ -68,7 +69,7 @@ def static(environ, start_response, path):
             start_response('200 OK', [('Content-Type', 'text/plain')])
         return [text]
     except IOError:
-        resp = NotFound()
+        resp = NotFound("{} not found".format(path))
         return resp(environ, start_response)
 
 
@@ -102,9 +103,7 @@ def application(environ, start_response):
     """
     path = environ.get('PATH_INFO', '').lstrip('/')
 
-    if path.startswith("static/"):
-        return static(environ, start_response, path)
-    elif path.startswith("_static/"):
+    if path.startswith("static/") or path.startswith("_static/"):
         return static(environ, start_response, path)
     elif path == "":
         return registration(environ, start_response)
