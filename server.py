@@ -82,7 +82,7 @@ LOOKUP = TemplateLookup(directories=['templates', 'htdocs'],
 # ----------------------------------------------------------------------------
 
 def registration(environ, start_response):
-    resp = Response(template_lookup=LOOKUP, mako_template="registration.mako")
+    resp = Response(template_lookup=LOOKUP, mako_template="registration.html")
     return resp(environ, start_response)
 
 

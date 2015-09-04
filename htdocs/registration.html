@@ -1,0 +1,67 @@
+<!doctype html>
+
+<html ng-app="main">
+<head>
+    <meta charset="utf-8">
+
+    <script src="/_static/angular1.2.0.min.js"></script>
+    <script src="/_static/angular-sanitize.min.js"></script>
+    <script src="/_static/jquery.min.latest.js"></script>
+    <script src="/_static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/registration.js"></script>
+
+    <link rel="stylesheet" href="/_static/bootstrap/css/bootstrap.min.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/static/registration.css">
+    <title>Static client registration</title>
+</head>
+<body>
+
+<toaster-container toaster-options="{'time-out': 6000}"></toaster-container>
+<div class="container">
+    <div ng-controller="IndexCtrl" id="formContainer" class="jumbotron">
+
+        <h1>Static client credentials</h1>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="text-center">New redirect URI:</div>
+                <form>
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="new_redirect_uri"
+                               autofocus>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary btn-sm"
+                                ng-click="add_redirect_uri()">
+                            Add
+                        </button>
+                    </span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="text-center">Added redirect URI's:</div>
+                <form ng-repeat="uri in redirect_uris">
+                    <div class="input-group">
+                        <input type="text" ng-model="uri" class="form-control">
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-sm"
+                                    ng-click="remove_redirect_uri($index)">
+                                X
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success btn-lg"
+                    ng-click="generate_client_credentials()">
+                Generate client credentials
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
