@@ -3,11 +3,11 @@
 import json
 import logging
 import os
+from urllib.parse import parse_qsl
 
-from beaker.middleware import SessionMiddleware
-from dirg_util.http_util import HttpHandler, Response, NotFound
 from oic.utils.client_management import CDB
 from mako.lookup import TemplateLookup
+from oic.utils.http_util import Response, NotFound
 
 __author__ = 'rohe0002'
 
@@ -82,9 +82,8 @@ LOOKUP = TemplateLookup(directories=['templates', 'htdocs'],
 # ----------------------------------------------------------------------------
 
 def registration(environ, start_response):
-    data = LOOKUP.get_template("registration.mako").render(),
-    start_response('200 OK', [('Content-Type', 'text/html')])
-    return [data]
+    resp = Response(template_lookup=LOOKUP, mako_template="registration.mako")
+    return resp(environ, start_response)
 
 
 def generate_static_client_credentials(parameters):
@@ -102,10 +101,8 @@ def application(environ, start_response):
         request is done
     :return: The response as a list of lines
     """
-    session = environ['beaker.session']
     path = environ.get('PATH_INFO', '').lstrip('/')
-    http_helper = HttpHandler(environ, start_response, session, LOGGER)
-    parameters = http_helper.query_dict()
+    query_params = dict(parse_qsl(environ.get("QUERY_STRING")))
 
     if path.startswith("static/"):
         return static(environ, start_response, path)
@@ -114,7 +111,7 @@ def application(environ, start_response):
     elif path == "":
         return registration(environ, start_response)
     elif path == "generate_client_credentials":
-        client_id, client_secret = generate_static_client_credentials(parameters)
+        client_id, client_secret = generate_static_client_credentials(query_params)
         resp = Response(json.dumps({"client_id": client_id, "client_secret": client_secret}),
                         headers=[('Content-Type', "application/json")])
         return resp(environ, start_response)
@@ -122,10 +119,16 @@ def application(environ, start_response):
 
 # ----------------------------------------------------------------------------
 
-session_opts = {
-    'session.type': 'memory',
-    'session.cookie_expires': True,
-    'session.auto': True,
-    'session.timeout': 900
-}
-wsgi = SessionMiddleware(application, session_opts)
+def bytes_middleware(application):
+    def response_as_bytes(environ, start_response):
+        resp = application(environ, start_response)
+
+        # encode the data if necessary
+        data = resp[0]
+        if isinstance(data, str):
+            data = data.encode("utf-8")
+        return [data]
+
+    return response_as_bytes
+
+wsgi = bytes_middleware(application)
