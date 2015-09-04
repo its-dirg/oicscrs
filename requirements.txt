@@ -1,0 +1,4 @@
+Mako==1.0.2
+Beaker==1.7.0
+oic==0.7.6
+git+https://github.com/its-dirg/dirg-util
