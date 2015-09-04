@@ -3,11 +3,10 @@
 import json
 import logging
 import os
-from urllib.parse import parse_qsl
 
 from oic.utils.client_management import CDB
 from mako.lookup import TemplateLookup
-from oic.utils.http_util import Response, NotFound
+from oic.utils.http_util import Response, NotFound, get_post
 
 __author__ = 'rohe0002'
 
@@ -102,7 +101,6 @@ def application(environ, start_response):
     :return: The response as a list of lines
     """
     path = environ.get('PATH_INFO', '').lstrip('/')
-    query_params = dict(parse_qsl(environ.get("QUERY_STRING")))
 
     if path.startswith("static/"):
         return static(environ, start_response, path)
@@ -111,6 +109,8 @@ def application(environ, start_response):
     elif path == "":
         return registration(environ, start_response)
     elif path == "generate_client_credentials":
+        post_data = get_post(environ)
+        query_params = json.loads(post_data)
         client_id, client_secret = generate_static_client_credentials(query_params)
         resp = Response(json.dumps({"client_id": client_id, "client_secret": client_secret}),
                         headers=[('Content-Type', "application/json")])
