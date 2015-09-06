@@ -115,6 +115,8 @@ def application(environ, start_response):
                         headers=[('Content-Type', "application/json")])
         return resp(environ, start_response)
 
+    return NotFound("'/" + path + "' not found")(environ, start_response)
+
 
 # ----------------------------------------------------------------------------
 
@@ -129,5 +131,6 @@ def bytes_middleware(application):
         return [data]
 
     return response_as_bytes
+
 
 wsgi = bytes_middleware(application)
