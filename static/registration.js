@@ -3,7 +3,7 @@ var app = angular.module('main', ['ngSanitize']);
 app.factory('static_client_factory', function ($http) {
     return {
         generate_client_credentials: function (redirect_uris) {
-            return $http.post("/generate_client_credentials", {"redirect_uris": redirect_uris});
+            return $http.post("generate_client_credentials", {"redirect_uris": redirect_uris});
         }
     };
 });
