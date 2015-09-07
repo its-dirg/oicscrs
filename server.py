@@ -24,8 +24,6 @@ hdlr.setFormatter(base_formatter)
 LOGGER.addHandler(hdlr)
 LOGGER.setLevel(logging.DEBUG)
 
-CLIENT_DB = "client_db"
-
 LOOKUP = TemplateLookup(directories=['templates', 'htdocs'],
                         input_encoding='utf-8', output_encoding='utf-8')
 
