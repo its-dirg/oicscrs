@@ -1,4 +1,4 @@
-var app = angular.module('main', ['ngSanitize']);
+var app = angular.module('main');
 
 app.factory('static_client_factory', function ($http) {
     return {
@@ -11,7 +11,7 @@ app.factory('static_client_factory', function ($http) {
 app.controller('IndexCtrl', function ($scope, $sce, static_client_factory) {
 
     function generate_client_credentials_success_callback(data, status, headers, config) {
-        alert("New client credentials have successfully been generated. \nclient_id: " + data['client_id'] + "\nclient_secret: " + data['client_secret'])
+        $scope.client_credentials = data;
     }
 
     function error_callback(data, status, headers, config) {
@@ -20,6 +20,7 @@ app.controller('IndexCtrl', function ($scope, $sce, static_client_factory) {
 
     $scope.redirect_uris = [];
     $scope.new_redirect_uri = "";
+    $scope.client_credentials = null;
 
     $scope.add_redirect_uri = function () {
         if ($scope.redirect_uris.indexOf($scope.new_redirect_uri) == -1) {
