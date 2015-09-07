@@ -38,10 +38,11 @@ def registration(environ, start_response):
 def generate_static_client_credentials(parameters):
     redirect_uris = parameters['redirect_uris']
     client_db_path = os.environ.get("OIDC_CLIENT_DB", "client_db")
+    LOGGER.info("Updating db: {}".format(client_db_path))
     cdb = CDB(client_db_path)
     static_client = cdb.create(redirect_uris=redirect_uris, policy_uri="example.com",
                                logo_uri="example.com")
-    LOGGER.debug("Generated client credentials: %s", json.dumps(static_client))
+    LOGGER.info("Generated client credentials: %s", json.dumps(static_client))
     return static_client['client_id'], static_client['client_secret']
 
 
