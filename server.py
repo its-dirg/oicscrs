@@ -37,7 +37,8 @@ def registration(environ, start_response):
 
 def generate_static_client_credentials(parameters):
     redirect_uris = parameters['redirect_uris']
-    cdb = CDB(CLIENT_DB)
+    client_db_path = os.environ.get("OIDC_CLIENT_DB", "client_db")
+    cdb = CDB(client_db_path)
     static_client = cdb.create(redirect_uris=redirect_uris, policy_uri="example.com",
                                logo_uri="example.com")
     LOGGER.debug("Generated client credentials: %s", json.dumps(static_client))
