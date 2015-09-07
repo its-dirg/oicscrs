@@ -26,60 +26,9 @@ LOGGER.setLevel(logging.DEBUG)
 
 CLIENT_DB = "client_db"
 
-
-# ----------------------------------------------------------------------------
-
-# noinspection PyUnusedLocal
-def css(environ, start_response, session):
-    try:
-        _info = open(environ["PATH_INFO"]).read()
-        resp = Response(_info)
-    except (OSError, IOError):
-        resp = NotFound(environ["PATH_INFO"])
-
-    return resp(environ, start_response)
-
-
-def static_file(path):
-    try:
-        os.stat(path)
-        return True
-    except OSError:
-        return False
-
-
-# noinspection PyUnresolvedReferences
-def static(environ, start_response, path):
-    LOGGER.info("[static]sending: %s" % (path,))
-
-    try:
-        with open(path) as f:
-            text = f.read()
-        if path.endswith(".ico"):
-            start_response('200 OK', [('Content-Type', "image/x-icon")])
-        elif path.endswith(".html"):
-            start_response('200 OK', [('Content-Type', 'text/html')])
-        elif path.endswith(".json"):
-            start_response('200 OK', [('Content-Type', 'application/json')])
-        elif path.endswith(".txt"):
-            start_response('200 OK', [('Content-Type', 'text/plain')])
-        elif path.endswith(".css"):
-            start_response('200 OK', [('Content-Type', 'text/css')])
-        else:
-            start_response('200 OK', [('Content-Type', 'text/plain')])
-        return [text]
-    except IOError:
-        resp = NotFound("{} not found".format(path))
-        return resp(environ, start_response)
-
-
-# ----------------------------------------------------------------------------
-
 LOOKUP = TemplateLookup(directories=['templates', 'htdocs'],
                         input_encoding='utf-8', output_encoding='utf-8')
 
-
-# ----------------------------------------------------------------------------
 
 def registration(environ, start_response):
     resp = Response(template_lookup=LOOKUP, mako_template="registration.html")
@@ -91,6 +40,7 @@ def generate_static_client_credentials(parameters):
     cdb = CDB(CLIENT_DB)
     static_client = cdb.create(redirect_uris=redirect_uris, policy_uri="example.com",
                                logo_uri="example.com")
+    LOGGER.debug("Generated client credentials: %s", json.dumps(static_client))
     return static_client['client_id'], static_client['client_secret']
 
 
@@ -103,9 +53,7 @@ def application(environ, start_response):
     """
     path = environ.get('PATH_INFO', '').lstrip('/')
 
-    if path.startswith("static/") or path.startswith("_static/"):
-        return static(environ, start_response, path)
-    elif path == "":
+    if path == "":
         return registration(environ, start_response)
     elif path == "generate_client_credentials":
         post_data = get_post(environ)
