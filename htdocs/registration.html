@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<div class="alert alert-success" ng-show="client_credentials">
+<div class="alert alert-success" ng-show="!!client_credentials">
     <ul>
         <li ng-repeat="(key, value) in client_credentials">{{key}}: {{value}}</li>
     </ul>
