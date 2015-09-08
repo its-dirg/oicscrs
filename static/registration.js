@@ -1,4 +1,4 @@
-var app = angular.module('main');
+var app = angular.module('main', []);
 
 app.factory('static_client_factory', function ($http) {
     return {
