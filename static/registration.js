@@ -11,6 +11,7 @@ app.factory('static_client_factory', function ($http) {
 app.controller('IndexCtrl', function ($scope, $sce, static_client_factory) {
 
     function generate_client_credentials_success_callback(data, status, headers, config) {
+        console.log(data)
         $scope.client_credentials = data;
     }
 
