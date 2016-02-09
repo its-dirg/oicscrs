@@ -40,6 +40,7 @@ def generate_static_client_credentials(parameters):
     cdb = CDB(client_db_path)
     static_client = cdb.create(redirect_uris=redirect_uris, policy_uri="example.com",
                                logo_uri="example.com")
+    static_client["response_types"] = ["code", "id_token", "id_token token", "code id_token", "code token", "code id_token token"]
     cdb.cdb.close()
     LOGGER.info("Generated client credentials: %s", json.dumps(static_client))
     return static_client['client_id'], static_client['client_secret']
